@@ -11,19 +11,20 @@ function invecg = ecg_inv(ecg)
 %--------------------------------------------------------------------------
 % Written by Mateus Joffily - NeuroII/UFRJ & CNC/CNRS
 
-ecg=ecg-mean(ecg);  % removes ecg mean
+% preliminaries
+ecg     = ecg-mean(ecg);
+ecg_abs = abs( ecg );
 
 % Remove outliers
-ecg_abs=abs(ecg);   % ecg absolute values
 while 1  
-    [max_ecg, idx]=max(ecg_abs);
-    amp_threshold=max_ecg-std(ecg_abs);
-    n_threshold=10;
+    [max_ecg, idx] = max(ecg_abs);
+    amp_threshold  = max_ecg-std(ecg_abs);
+    n_threshold    = 10;
     % figure, hold on, plot(ecg_abs), plot([1 length(ecg_abs)], [amp_threshold amp_threshold], 'r');
     % If there are less than n_threshold samples smaller than amp_threshold,
     % than those samples are outliers
     if length(find( ecg_abs > amp_threshold )) < n_threshold
-        ecg_abs(idx)=0;
+        ecg_abs(idx) = 0;
     else
         break
     end

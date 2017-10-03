@@ -1,16 +1,16 @@
-function [hp, thp]=ecg_hp(t, method)
+function [hp, thp] = ecg_hp(Rt, method)
 % ECG_HP Calculate the 'instantaneous' or 'delayed' heart period.
 %   [hp, thp] = ECG_HP(t, method)
 %
 % Input arguments:
-%   t      - heart beats' time (at least two beats must be recorded)
+%   Rt     - R-wave peak times (cumulative sum of IBI series)
 %   method - 'instantaneous': return the instantaneous HP
 %            'delayed': return the delayed HP 
 %            (see description below)
 %
 % Output arguments:
-%   hp - instantaneous heart period
-%   thp - instantaneous heart period time
+%   hp     - instantaneous heart period
+%   thp    - instantaneous heart period time
 %
 % Description:
 %   The instantaneous heart period is defined as f(t)=t[n+1]-t[n] 
@@ -25,18 +25,24 @@ function [hp, thp]=ecg_hp(t, method)
 % -------------------------------------------------------------------------
 % Written by Mateus Joffily - NeuroII/UFRJ & CNC/CNRS
 
-if length(t)>1
-    hp=diff(t);
+if length(Rt) > 1
+    
+    hp      = diff(Rt);
     if strcmp(method, 'instantaneous')
-        thp=t(1:end-1);
+        thp = Rt(1:end-1);
+        
     elseif strcmp(method, 'delayed')
-        thp=t(2:end);
+        thp = Rt(2:end);
+        
     else
         disp ([mfilename ': "' method '" method unknown.' ]);
-        hp=[];
-        thp=[];
+        hp  = [];
+        thp = [];
     end
+    
 else
-    hp=[];
-    thp=[];
+    hp      = [];
+    thp     = [];    
+end
+
 end

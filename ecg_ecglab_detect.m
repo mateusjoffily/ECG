@@ -3,13 +3,13 @@ function beat_idx = ecg_ecglab_detect(ecg, fs, algorithm)
 %   beat_idx = ECG_ECGLAB_DETECT(ecg, fs)
 %
 % Input arguments:
-%   ecg - ecg signal 
-%   fs - ecg sampling rate (Hz) 
+%   ecg       - ecg signal 
+%   fs        - ecg sampling rate (Hz) 
 %   algorithm - ecglab detection algorithm: 
 %               '1' = Slow algorithm  or '2' = Fast algorithm
 %
 % Output arguments:
-%   beat_idx - index of detected R-waves into ecg input vector 
+%   beat_idx  - index of detected R-waves into ecg input vector 
 % 
 % References:
 %   Azevedo de Carvalho et al. (?) Development of a Matlab Software for 
@@ -22,7 +22,9 @@ global samplerate_ecg
 samplerate_ecg = fs;
 
 % Normalize and trucate data
-ecg = double(uint16((2^8-1)*ecg/max(ecg)));
+ecg            = double(uint16((2^8-1)*ecg/max(ecg)));
 
 % Detect RR using ecglabRR routine
-beat_idx = ecglabRR_detecta_ondar(ecg, algorithm);
+beat_idx       = ecglabRR_detecta_ondar(ecg, algorithm);
+
+end

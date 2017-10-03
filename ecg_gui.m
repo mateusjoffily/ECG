@@ -1,28 +1,24 @@
-function [invecg, beat_idx]=ecg_gui(ecg, fs, invecg, beat_idx)
+function beat_idx = ecg_gui(ecg, fs, beat_idx)
 % ECG_GUI Graphical user interface for ECG R-wave detection.
 %   [invecg, beat_idx] = ECG_GUI(ecg, fs, invecg, beat_idx)
 %
 % Input arguments:
-%   ecg - ecg raw data 
-%   fs  - ecg sampling rate (Hz) 
-%   invecg - flag if ecg raw data is inverted or not: 
-%            '1' ecg is not inverted; '-1' ecg is inverted
+%   ecg      - ecg data 
+%   fs       - ecg sampling rate (Hz) 
 %   beat_idx - index of R-waves previously detected into ecg input vector
 %
 % Output arguments:
-%   invecg - '-1' ecg signal is inverted or '1' if ecg signal is not inverted 
 %   beat_idx - index of R-waves into ecg input vector
 %
 % Description:
 %   Provides an Graphical User Interface to control ECG R-waves detection.
 %   The functionalities currently implemented are: 
-%   (1) Invert ECG signal
-%   (2) Set detection amplitude threshold
-%   (3) Remove detected ECG beat
-%   (4) Add ECG beat at mean inter beats interval
-%   (5) Automatic R-wave detection (uses ecg_beat_detect.m)
-%   (6) Plot Interval RR (IRR) serie
-%   (7) Plot IRR Difference serie
+%   (1) Set detection amplitude threshold
+%   (2) Remove detected ECG beat
+%   (3) Add ECG beat at mean inter beats interval
+%   (4) Automatic R-wave detection (uses ecg_beat_detect.m)
+%   (5) Plot Interval RR (IRR) serie
+%   (6) Plot IRR Difference serie
 %
 % Called by:
 %   - ecg_main.m
@@ -30,13 +26,12 @@ function [invecg, beat_idx]=ecg_gui(ecg, fs, invecg, beat_idx)
 % Adapted by Mateus Joffily - NeuroII/UFRJ
 
 % Backup values
-invecg_backup = invecg;
 beat_idx_backup = beat_idx;
 
 % ecg samples time stamps
-tecg = [0:length(ecg)-1]/fs;
+tecg            = (0:length(ecg)-1)/fs;
 % limits of graph's time axis
-taxis = [0 tecg(end)];
+taxis           = [0 tecg(end)];
 
 % create figure
 nn=figure('units','normal', ...
@@ -46,7 +41,7 @@ nn=figure('units','normal', ...
           'resize','on');
 
 button=0;  % inilialize button value
-while button < 11   % loop until 'exit'
+while button < 10   % loop until 'exit'
     
     % Plot whole ecg signal + detected beats
     plot(tecg, ecg, 'k', ...
@@ -65,7 +60,7 @@ while button < 11   % loop until 'exit'
     ylabel('amplitude (a.u.)');
     
     % command menu
-    button=menu('Choose option','Display whole signal','Invert signal', ...
+    button=menu('Choose option','Display whole signal', ...
                'Set threshold','Previous window', 'Next window', ...
                'Remove beat', ...
                ... 'Add beat', ... % remove this option for the moment
@@ -83,15 +78,7 @@ while button < 11   % loop until 'exit'
         case 1 % Show whole signal
             taxis = [0 tecg(end)];
 
-        case 2 % Invert ECG signal
-            invecg=-invecg;    % Invert inversion flag
-            ecg=-ecg;          % Invert ecg signal
-            ecg=ecg/max(ecg);  % normalise ecg signal
-
-            % Automaticaly detect R-waves
-            beat_idx = ecg_beat_detect(ecg, fs);
-
-        case 3 % Detect R-waves above amplitude threshold
+        case 2 % Detect R-waves above amplitude threshold
             title('Press LEFT mouse button to set threshold');
             [x,y,bot]=ginput(1);
             if bot ~= 1
@@ -132,7 +119,7 @@ while button < 11   % loop until 'exit'
                 beat_idx = sort([beat_idx t_idx(1)+beat_idx_win-1]);
             end
 
-        case 4 % Move backward
+        case 3 % Move backward
             v=axis;
             v1=v(1)-(v(2)-v(1));
             if v1 < 0
@@ -144,7 +131,7 @@ while button < 11   % loop until 'exit'
             end
             taxis = [v1 v2];
 
-        case 5 % Move forward
+        case 4 % Move forward
             v=axis;
             v2=v(2)+(v(2)-v(1));
             if v2>(length(ecg)-1)/fs
@@ -156,7 +143,7 @@ while button < 11   % loop until 'exit'
             end
             taxis = [v1 v2];
 
-        case 6 % Delete beat at mouse location
+        case 5 % Delete beat at mouse location
             title('Press LEFT mouse button to delete beat');
             [x,y,bot]=ginput(1);
             if bot==1 & x >= 0 & x<=(length(ecg)-1)/fs
@@ -180,10 +167,10 @@ while button < 11   % loop until 'exit'
 %                 pause(2);
 %             end
             
-        case 7 % Add mean beat at mouse location
+        case 6 % Add mean beat at mouse location
             title('Press LEFT mouse button to add mean beat');
             [x,y,bot]=ginput(1);
-            if bot==1 & x >= 0 & x<=(length(ecg)-1)/fs
+            if bot==1 && x >= 0 && x<=(length(ecg)-1)/fs
                 k = round(x*fs)+1;
                 % Find the closest two beats to the selected point
                 [s,is]=sort(abs(beat_idx-k));
@@ -197,7 +184,7 @@ while button < 11   % loop until 'exit'
                 pause(2);
             end
 
-        case 8 % Automatic beat detection inside current window
+        case 7 % Automatic beat detection inside current window
  
             % get ecg segment inside window
             v=axis;
@@ -223,8 +210,8 @@ while button < 11   % loop until 'exit'
             lineNo=1;
             answer=inputdlg(prompt,dlgTitle,lineNo,def);
 
-            if ~isempty(answer) & ~(isempty(answer{1}) | ...
-                    isempty(answer{2}) | isempty(answer{3}))
+            if ~isempty(answer) && ~(isempty(answer{1}) || ...
+                    isempty(answer{2}) || isempty(answer{3}))
                 w=str2num(answer{1}); % R-wave normalisation window [sec]
                 t=str2num(answer{2}); % Amplitude threshold [a.u.]
                 p=str2num(answer{3}); % Lag window preventing large T-waves detection [sec]'
@@ -238,16 +225,16 @@ while button < 11   % loop until 'exit'
             end
             
             % find beats previously detected inside time window
-            idx = find(ismember(beat_idx,t_idx));
+            idx = ismember(beat_idx,t_idx);
             % remove beats
             beat_idx(idx) = [];
             % insert new detected beats
-            beat_idx = sort([beat_idx t_idx(1)+beat_idx_win-1]);
+            beat_idx      = sort([beat_idx t_idx(1)+beat_idx_win-1]);
 
-        case 9 % Plot RR series
+        case 8 % Plot RR series
             %beat_idx=find(i_beat>0);
-            beat_time=(beat_idx-1)/fs;
-            [RR, RR_time]=ecg_hp(beat_time, 'instantaneous');
+            beat_time     = (beat_idx-1)/fs;
+            [RR, RR_time] = ecg_hp(beat_time, 'instantaneous');
 
             % Detect ectopic beats
             [arti,flsi] = ecg_artifact(RR);
@@ -279,7 +266,7 @@ while button < 11   % loop until 'exit'
             taxis = axis;
             taxis = taxis(1:2);
             
-        case 10 % Plot RR interval differences
+        case 9 % Plot RR interval differences
             %beat_idx=find(i_beat>0);
             beat_time=(beat_idx-1)/fs;
             [RR, RR_time]=ecg_hp(beat_time, 'instantaneous');
@@ -292,8 +279,8 @@ while button < 11   % loop until 'exit'
             [arti,flsi] = ecg_artifact(RR);
             
             % Remove artifacts that are outside RRdiff length
-            arti(find(arti>numel(RRdiff)))=[];
-            flsi(find(flsi>numel(RRdiff)))=[];
+            arti(arti>numel(RRdiff)) = [];
+            flsi(flsi>numel(RRdiff)) = [];
             
             % Plot graph
             figure(nn);
@@ -324,14 +311,12 @@ while button < 11   % loop until 'exit'
             taxis = axis;
             taxis = taxis(1:2);
             
-        case 11 % Cancel changes & Quit
+        case 10 % Cancel changes & Quit
             % Restore backup values
-            beat_idx=beat_idx_backup;
-            invecg=invecg_backup;
+            beat_idx = beat_idx_backup;
             close(nn);
 
-        case 12 % Save & Quit
-            % beat_idx=find(i_beat>0);
+        case 11 % Save & Quit
             close(nn);
     end
 

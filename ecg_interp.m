@@ -1,15 +1,15 @@
-function yy=ecg_interp(t,y,tt,method)
+function yy = ecg_interp(t,y,tt,method)
 % ECG_INTERP interpolate HR series
 %   yy = ECG_INTERP(t,y,tt,method)
 %
 % Input arguments:
-%   t      - vector of HR instants
+%   t      - HR time
 %   y      - HR values
-%   tt     - vector of instants where HR values should be estimated
+%   tt     - time of resampled HR values
 %   method - 'constant', linear' or 'spline'
 %
 % Output arguments:
-%   yy     - HR values should at 'tt' instants
+%   yy     - resampled HR values at 'tt'
 %
 % Description:
 %   'constant' seems to be the most frequently used technique to calculate
@@ -26,19 +26,19 @@ function yy=ecg_interp(t,y,tt,method)
 
 if length(y) ~= length(t)
     disp ([mfilename ': "y" and "t" vectors must have the same length.']);
-    yy=NaN;
+    yy = NaN;
     return
 end
 
 switch method
     case 'constant'
-        yy=[];
-        for i=1:numel(tt)
-            k=find((tt(i)-t)>0);
+        yy = [];
+        for i = 1:length(tt)
+            k = find( (tt(i)-t) > 0 );
             if isempty(k)
-                yy=[yy NaN];
+                yy = [yy NaN];
             else
-                yy=[yy y(k(end))];
+                yy = [yy y(k(end))];
             end
         end
         
@@ -46,9 +46,9 @@ switch method
         yy = interp1(t,y,tt,'linear');
         
     case 'spline'
-        yy=spline(t,y,tt);
+        yy = spline(t,y,tt);
         
     otherwise
-        yy=NaN;
+        yy = NaN;
 end
     
