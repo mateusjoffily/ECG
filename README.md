@@ -1,2 +1,2 @@
 # ECG
-ECG Toolbox
+Toolbox for Electrocardiogram (ECG) preprocessing and analysis
