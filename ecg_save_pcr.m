@@ -51,10 +51,10 @@ for j = 1:length(names)
     for k = 1:length(onsets{j})
         % Write to file
         fprintf(fid, '%s\t%0.2f\t', names{j}, onsets{j}(k));
-        if durations{j} == 1
-            fprintf(fid, '%0.2f\t', durations{j}(k));
-        else
+        if length(durations{j}) == 1
             fprintf(fid, '%0.2f\t', durations{j});
+        else
+            fprintf(fid, '%0.2f\t', durations{j}(k));
         end
         fprintf(fid, '%0.2f\t', mIBI{j}(k));        
         fprintf(fid, '%0.2f\t', IBI{j}(k,:));
