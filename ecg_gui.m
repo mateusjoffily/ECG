@@ -116,7 +116,7 @@ while button < 10   % loop until 'exit'
             beat_idx(idx) = [];
             % insert new detected beats
             if ~isempty(beat_idx_win)
-                beat_idx = sort([beat_idx t_idx(1)+beat_idx_win-1]);
+                beat_idx = sort([beat_idx; (t_idx(1)+beat_idx_win-1)']);
             end
 
         case 3 % Move backward
@@ -178,7 +178,7 @@ while button < 10   % loop until 'exit'
                 t_mean_beat = mean((beat_idx(is(1:2))-1)/fs);
                 % add beat at t_mean_time
                 k = round(t_mean_beat*fs)+1;
-                beat_idx = unique([beat_idx k]);
+                beat_idx = unique([beat_idx; k]);
             else
                 title('TRY AGAIN');
                 pause(2);
@@ -218,8 +218,6 @@ while button < 10   % loop until 'exit'
                 
                 % Automaticaly detect R-waves
                 beat_idx_win = ecg_beat_detect(ecg_win, fs, w, t, p);
-                % reshape beat_idx_win as 1-by-N vector
-                beat_idx_win = reshape(beat_idx_win,1,length(beat_idx_win));
             else
                 return
             end
@@ -229,7 +227,7 @@ while button < 10   % loop until 'exit'
             % remove beats
             beat_idx(idx) = [];
             % insert new detected beats
-            beat_idx      = sort([beat_idx t_idx(1)+beat_idx_win-1]);
+            beat_idx      = sort([beat_idx; t_idx(1)+beat_idx_win(:)-1]);
 
         case 8 % Plot RR series
             %beat_idx=find(i_beat>0);

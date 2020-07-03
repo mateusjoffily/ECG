@@ -32,7 +32,7 @@ function [mIBI,rIBI,rIBIt] = ecg_pcr(Rt,onsets,durations)
 epoch_start = -3;
 epoch_end   = 12;
 Fs          = 2;
-DT          = -epoch_start:1/Fs:epoch_end;
+DT          = epoch_start:1/Fs:epoch_end;
 
 no          = length(onsets);
 mIBI        = cell(1,no);
